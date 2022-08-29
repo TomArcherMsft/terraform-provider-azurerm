@@ -92,6 +92,7 @@ func resourceSpringCloudGatewayRouteConfig() *pluginsdk.Resource {
 
 						"order": {
 							Type:     pluginsdk.TypeInt,
+							Default:  -1,
 							Optional: true,
 						},
 
@@ -244,7 +245,7 @@ func expandGatewayRouteConfigGatewayAPIRouteArray(input []interface{}) *[]apppla
 	results := make([]appplatform.GatewayAPIRoute, 0)
 	for _, item := range input {
 		v := item.(map[string]interface{})
-		results = append(results, appplatform.GatewayAPIRoute{
+		route := appplatform.GatewayAPIRoute{
 			Title:       utils.String(v["title"].(string)),
 			Description: utils.String(v["description"].(string)),
 			URI:         utils.String(v["uri"].(string)),
@@ -254,7 +255,11 @@ func expandGatewayRouteConfigGatewayAPIRouteArray(input []interface{}) *[]apppla
 			Filters:     utils.ExpandStringSlice(v["filters"].(*pluginsdk.Set).List()),
 			Order:       utils.Int32(int32(v["order"].(int))),
 			Tags:        utils.ExpandStringSlice(v["classification_tags"].(*pluginsdk.Set).List()),
-		})
+		}
+		if order := v["order"].(int); order != -1 {
+			route.Order = utils.Int32(int32(order))
+		}
+		results = append(results, route)
 	}
 	return &results
 }
@@ -270,7 +275,7 @@ func flattenGatewayRouteConfigGatewayAPIRouteArray(input *[]appplatform.GatewayA
 		if item.Description != nil {
 			description = *item.Description
 		}
-		var order int32
+		order := int32(-1)
 		if item.Order != nil {
 			order = *item.Order
 		}
