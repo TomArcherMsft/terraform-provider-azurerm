@@ -1,0 +1,55 @@
+terraform {
+  required_providers {
+    azapi = {
+      source = "Azure/azapi"
+    }
+  }
+}
+
+provider "azapi" {
+  skip_provider_registration = false
+}
+
+resource "azapi_resource" "resourceGroup" {
+  type      = "Microsoft.Resources/resourceGroups@2020-06-01"
+  parent_id = "/subscriptions/85b3dbca-5974-4067-9669-67a141095a76"
+  name      = "acctestRG-auto-221018161056048614"
+  location  = "westeurope"
+  body      = jsonencode({})
+  tags      = {}
+}
+
+resource "azapi_resource" "automationAccount" {
+  type      = "Microsoft.Automation/automationAccounts@2021-06-22"
+  parent_id = azapi_resource.resourceGroup.id
+  name      = "acctest-221018161056048614"
+  location  = azapi_resource.resourceGroup.location
+  body = jsonencode({
+    properties = {
+      publicNetworkAccess = true
+      sku = {
+        name = "Basic"
+      }
+    }
+  })
+  tags = {}
+}
+
+resource "azapi_resource" "module" {
+  type      = "Microsoft.Automation/automationAccounts/modules@2020-01-13-preview"
+  parent_id = azapi_resource.automationAccount.id
+  name      = "xActiveDirectory"
+
+  body = jsonencode({
+    properties = {
+      contentLink = {
+        contentHash = {
+          algorithm = "SHA256"
+          value     = "5277774C7D6FC0E60986519D2D16C7100B9948B2D0B62091ED7B489A252F0F6D"
+        }
+        uri = "https://devopsgallerystorage.blob.core.windows.net/packages/xactivedirectory.2.19.0.nupkg"
+      }
+    }
+  })
+
+}

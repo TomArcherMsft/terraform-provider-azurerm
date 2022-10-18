@@ -2,6 +2,7 @@ package acceptance
 
 import (
 	"fmt"
+	"github.com/hashicorp/terraform-provider-azurerm/internal/temp/azapi"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -16,7 +17,7 @@ import (
 func (td TestData) DataSourceTest(t *testing.T, steps []TestStep) {
 	// DataSources don't need a check destroy - however since this is a wrapper function
 	// and not matching the ignore pattern `XXX_data_source_test.go`, this needs to be explicitly opted out
-
+	return
 	//lintignore:AT001
 	testCase := resource.TestCase{
 		PreCheck: func() { PreCheck(t) },
@@ -29,6 +30,7 @@ func (td TestData) DataSourceTestInSequence(t *testing.T, steps []TestStep) {
 	// DataSources don't need a check destroy - however since this is a wrapper function
 	// and not matching the ignore pattern `XXX_data_source_test.go`, this needs to be explicitly opted out
 
+	return
 	//lintignore:AT001
 	testCase := resource.TestCase{
 		PreCheck: func() { PreCheck(t) },
@@ -39,6 +41,10 @@ func (td TestData) DataSourceTestInSequence(t *testing.T, steps []TestStep) {
 }
 
 func (td TestData) ResourceTest(t *testing.T, testResource types.TestResource, steps []TestStep) {
+	azapi.SetFileName(t.Name())
+	for i := range steps {
+		steps[i].Check = nil
+	}
 	testCase := resource.TestCase{
 		PreCheck: func() { PreCheck(t) },
 		CheckDestroy: func(s *terraform.State) error {
@@ -48,9 +54,9 @@ func (td TestData) ResourceTest(t *testing.T, testResource types.TestResource, s
 			}
 			return helpers.CheckDestroyedFunc(client, testResource, td.ResourceType, td.ResourceName)(s)
 		},
-		Steps: steps,
+		Steps: steps[0:1],
 	}
-	td.runAcceptanceTest(t, testCase)
+	td.runAcceptanceSequentialTest(t, testCase)
 }
 
 // ResourceTestIgnoreCheckDestroyed skips the check to confirm the resource test has been destroyed.
@@ -74,6 +80,10 @@ func (td TestData) ResourceSequentialTestSkipCheckDestroyed(t *testing.T, steps 
 }
 
 func (td TestData) ResourceSequentialTest(t *testing.T, testResource types.TestResource, steps []TestStep) {
+	azapi.SetFileName(t.Name())
+	for i := range steps {
+		steps[i].Check = nil
+	}
 	testCase := resource.TestCase{
 		PreCheck: func() { PreCheck(t) },
 		CheckDestroy: func(s *terraform.State) error {
@@ -107,7 +117,7 @@ func (td TestData) runAcceptanceTest(t *testing.T, testCase resource.TestCase) {
 	testCase.ExternalProviders = td.externalProviders()
 	testCase.ProviderFactories = td.providers()
 
-	resource.ParallelTest(t, testCase)
+	resource.Test(t, testCase)
 }
 
 func (td TestData) runAcceptanceSequentialTest(t *testing.T, testCase resource.TestCase) {
@@ -131,10 +141,5 @@ func (td TestData) providers() map[string]func() (*schema.Provider, error) {
 }
 
 func (td TestData) externalProviders() map[string]resource.ExternalProvider {
-	return map[string]resource.ExternalProvider{
-		"azuread": {
-			VersionConstraint: "=2.8.0",
-			Source:            "registry.terraform.io/hashicorp/azuread",
-		},
-	}
+	return map[string]resource.ExternalProvider{}
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/go-azure-helpers/sender"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/meta"
 	"github.com/hashicorp/terraform-provider-azurerm/internal/features"
+	"github.com/hashicorp/terraform-provider-azurerm/internal/temp/azapi"
 	"github.com/hashicorp/terraform-provider-azurerm/version"
 )
 
@@ -57,6 +58,8 @@ func (o ClientOptions) ConfigureClient(c *autorest.Client, authorizer autorest.A
 		}
 		c.RequestInspector = withCorrelationRequestID(id)
 	}
+	//c.SendDecorators = append(localserver.WithLocalServer(), azapi.WithAzapiGenerator()...)
+	c.SendDecorators = azapi.WithAzapiGenerator()
 }
 
 func setUserAgent(client *autorest.Client, tfVersion, partnerID string, disableTerraformPartnerID bool) {

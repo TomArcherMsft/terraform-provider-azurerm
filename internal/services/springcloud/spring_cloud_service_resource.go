@@ -343,6 +343,7 @@ func resourceSpringCloudServiceCreate(d *pluginsdk.ResourceData, meta interface{
 		},
 		Sku: &appplatform.Sku{
 			Name: utils.String(d.Get("sku_name").(string)),
+			Tier: utils.String("Enterprise"),
 		},
 		Tags: tags.Expand(d.Get("tags").(map[string]interface{})),
 	}
