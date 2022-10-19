@@ -14,6 +14,7 @@ import (
 )
 
 func (td TestData) DataSourceTest(t *testing.T, steps []TestStep) {
+	return
 	// DataSources don't need a check destroy - however since this is a wrapper function
 	// and not matching the ignore pattern `XXX_data_source_test.go`, this needs to be explicitly opted out
 
@@ -26,6 +27,7 @@ func (td TestData) DataSourceTest(t *testing.T, steps []TestStep) {
 }
 
 func (td TestData) DataSourceTestInSequence(t *testing.T, steps []TestStep) {
+	return
 	// DataSources don't need a check destroy - however since this is a wrapper function
 	// and not matching the ignore pattern `XXX_data_source_test.go`, this needs to be explicitly opted out
 
@@ -39,6 +41,8 @@ func (td TestData) DataSourceTestInSequence(t *testing.T, steps []TestStep) {
 }
 
 func (td TestData) ResourceTest(t *testing.T, testResource types.TestResource, steps []TestStep) {
+	td.ExportConfig(t, steps)
+	return
 	testCase := resource.TestCase{
 		PreCheck: func() { PreCheck(t) },
 		CheckDestroy: func(s *terraform.State) error {
@@ -74,6 +78,8 @@ func (td TestData) ResourceSequentialTestSkipCheckDestroyed(t *testing.T, steps 
 }
 
 func (td TestData) ResourceSequentialTest(t *testing.T, testResource types.TestResource, steps []TestStep) {
+	td.ExportConfig(t, steps)
+	return
 	testCase := resource.TestCase{
 		PreCheck: func() { PreCheck(t) },
 		CheckDestroy: func(s *terraform.State) error {
