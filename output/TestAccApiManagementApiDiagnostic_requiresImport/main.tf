@@ -1,0 +1,85 @@
+terraform {
+  required_providers {
+    azapi = {
+      source = "Azure/azapi"
+    }
+  }
+}
+
+provider "azapi" {
+  skip_provider_registration = false
+}
+
+resource "azapi_resource" "resourceGroup" {
+  type      = "Microsoft.Resources/resourceGroups@2020-06-01"
+  parent_id = "/subscriptions/85b3dbca-5974-4067-9669-67a141095a76"
+  name      = "acctestRG-221102104016541412"
+  location  = "westeurope"
+  body      = jsonencode({})
+  tags      = {}
+}
+
+resource "azapi_resource" "component" {
+  type      = "Microsoft.Insights/components@2020-02-02"
+  parent_id = azapi_resource.resourceGroup.id
+  name      = "acctestappinsights-221102104016541412"
+  location  = azapi_resource.resourceGroup.location
+  body = jsonencode({
+    kind = "web"
+    properties = {
+      Application_Type                = "web"
+      DisableIpMasking                = false
+      DisableLocalAuth                = false
+      ForceCustomerStorageForProfiler = false
+      RetentionInDays                 = 90
+      SamplingPercentage              = 100
+      publicNetworkAccessForIngestion = "Enabled"
+      publicNetworkAccessForQuery     = "Enabled"
+    }
+  })
+  tags = {}
+}
+
+resource "azapi_resource" "api" {
+  type      = "Microsoft.ApiManagement/service/apis@2021-08-01"
+  parent_id = azapi_resource.service.id
+  name      = "acctestAMA-221102104016541412;rev=1"
+
+  body = jsonencode({
+    properties = {
+      apiType    = "http"
+      apiVersion = ""
+      format     = "swagger-link-json"
+      path       = "test"
+      type       = "http"
+      value      = "http://conferenceapi.azurewebsites.net/?format=json"
+    }
+  })
+
+}
+
+resource "azapi_resource" "api2" {
+  type      = "Microsoft.ApiManagement/service/apis@2021-08-01"
+  parent_id = azapi_resource.service.id
+  name      = "acctestAMA-221102104016541412;rev=1"
+
+  body = jsonencode({
+    properties = {
+      apiRevisionDescription = ""
+      apiType                = "http"
+      apiVersion             = ""
+      apiVersionDescription  = ""
+      authenticationSettings = {}
+      description            = ""
+      displayName            = "Test API"
+      path                   = "test"
+      protocols = [
+        "https",
+      ]
+      serviceUrl           = ""
+      subscriptionRequired = true
+      type                 = "http"
+    }
+  })
+
+}

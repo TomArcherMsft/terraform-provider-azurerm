@@ -13,7 +13,7 @@ provider "azapi" {
 resource "azapi_resource" "resourceGroup" {
   type      = "Microsoft.Resources/resourceGroups@2020-06-01"
   parent_id = "/subscriptions/85b3dbca-5974-4067-9669-67a141095a76"
-  name      = "acctestRG-auto-221018160925859737"
+  name      = "acctestRG-auto-221102104206175364"
   location  = "westeurope"
   body      = jsonencode({})
   tags      = {}
@@ -22,7 +22,7 @@ resource "azapi_resource" "resourceGroup" {
 resource "azapi_resource" "automationAccount" {
   type      = "Microsoft.Automation/automationAccounts@2021-06-22"
   parent_id = azapi_resource.resourceGroup.id
-  name      = "acctestAA-221018160925859737"
+  name      = "acctestAA-221102104206175364"
   location  = azapi_resource.resourceGroup.location
   body = jsonencode({
     properties = {
@@ -38,7 +38,7 @@ resource "azapi_resource" "automationAccount" {
 resource "azapi_resource" "certificate" {
   type      = "Microsoft.Automation/automationAccounts/certificates@2020-01-13-preview"
   parent_id = azapi_resource.automationAccount.id
-  name      = "acctest-221018160925859737"
+  name      = "acctest-221102104206175364"
 
   body = jsonencode({
     properties = {
@@ -53,7 +53,7 @@ resource "azapi_resource" "certificate" {
 resource "azapi_resource" "connection" {
   type      = "Microsoft.Automation/automationAccounts/connections@2020-01-13-preview"
   parent_id = azapi_resource.automationAccount.id
-  name      = "acctestACC-221018160925859737"
+  name      = "acctestACC-221102104206175364"
 
   body = jsonencode({
     properties = {

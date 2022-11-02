@@ -13,7 +13,7 @@ provider "azapi" {
 resource "azapi_resource" "resourceGroup" {
   type      = "Microsoft.Resources/resourceGroups@2020-06-01"
   parent_id = "/subscriptions/85b3dbca-5974-4067-9669-67a141095a76"
-  name      = "acctestRG-auto-221018164448093145"
+  name      = "acctestRG-auto-221102104406252671"
   location  = "westeurope"
   body      = jsonencode({})
   tags      = {}
@@ -22,7 +22,7 @@ resource "azapi_resource" "resourceGroup" {
 resource "azapi_resource" "automationAccount" {
   type      = "Microsoft.Automation/automationAccounts@2021-06-22"
   parent_id = azapi_resource.resourceGroup.id
-  name      = "acctestAA-221018164448093145"
+  name      = "acctestAA-221102104406252671"
   location  = azapi_resource.resourceGroup.location
   body = jsonencode({
     properties = {
@@ -33,74 +33,4 @@ resource "azapi_resource" "automationAccount" {
     }
   })
   tags = {}
-}
-
-resource "azapi_resource" "schedule" {
-  type      = "Microsoft.Automation/automationAccounts/schedules@2020-01-13-preview"
-  parent_id = azapi_resource.automationAccount.id
-  name      = "acctestAS-221018164448093145"
-
-  body = jsonencode({
-    properties = {
-      description = ""
-      frequency   = "OneTime"
-      startTime   = "2022-10-18T16:52:05.080395+08:00"
-      timeZone    = "Etc/UTC"
-    }
-  })
-
-}
-
-resource "azapi_resource" "runbook" {
-  type      = "Microsoft.Automation/automationAccounts/runbooks@2018-06-30"
-  parent_id = azapi_resource.automationAccount.id
-  name      = "Output-HelloWorld"
-  location  = azapi_resource.resourceGroup.location
-  body = jsonencode({
-    properties = {
-      description = "This is a test runbook for terraform acceptance test"
-      logProgress = true
-      logVerbose  = true
-      publishContentLink = {
-        uri     = "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/c4935ffb69246a6058eb24f54640f53f69d3ac9f/101-automation-runbook-getvms/Runbooks/Get-AzureVMTutorial.ps1"
-        version = ""
-      }
-      runbookType = "PowerShell"
-    }
-  })
-  tags = {}
-}
-
-resource "azapi_resource" "draft" {
-  type      = "Microsoft.Automation/automationAccounts/runbooks/draft@2018-06-30"
-  parent_id = azapi_resource.runbook.id
-  name      = "content"
-
-  body = jsonencode(null)
-
-}
-
-resource "azapi_resource" "jobSchedule" {
-  type      = "Microsoft.Automation/automationAccounts/jobSchedules@2020-01-13-preview"
-  parent_id = azapi_resource.automationAccount.id
-  name      = "669da4fe-7323-4013-b6ee-dd9913e19bf9"
-
-  body = jsonencode({
-    properties = {
-      parameters = {
-        case       = "MATTERS"
-        keepcount  = "20"
-        output     = "Earth"
-        url        = "https://www.Example.com"
-        webhookuri = "http://www.example.com/hook"
-      }
-      runbook = {
-        name = azapi_resource.runbook.name
-      }
-      schedule = {
-        name = azapi_resource.schedule.name
-      }
-    }
-  })
-
 }

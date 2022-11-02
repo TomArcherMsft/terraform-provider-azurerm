@@ -1,0 +1,55 @@
+terraform {
+  required_providers {
+    azapi = {
+      source = "Azure/azapi"
+    }
+  }
+}
+
+provider "azapi" {
+  skip_provider_registration = false
+}
+
+resource "azapi_resource" "resourceGroup" {
+  type      = "Microsoft.Resources/resourceGroups@2020-06-01"
+  parent_id = "/subscriptions/85b3dbca-5974-4067-9669-67a141095a76"
+  name      = "acctestRG-cdn-afdx-221102104357131689"
+  location  = "westeurope"
+  body      = jsonencode({})
+  tags      = {}
+}
+
+resource "azapi_resource" "profile" {
+  type      = "Microsoft.Cdn/profiles@2021-06-01"
+  parent_id = azapi_resource.resourceGroup.id
+  name      = "accTestProfile-221102104357131689"
+  location  = "global"
+  body = jsonencode({
+    properties = {
+      originResponseTimeoutSeconds = 120
+    }
+    sku = {
+      name = "Premium_AzureFrontDoor"
+    }
+  })
+  tags = {}
+}
+
+resource "azapi_resource" "FrontDoorWebApplicationFirewallPolicy" {
+  type      = "Microsoft.Network/FrontDoorWebApplicationFirewallPolicies@2020-11-01"
+  parent_id = azapi_resource.resourceGroup.id
+  name      = "accTestWAF221102104357131689"
+  location  = "global"
+  body = jsonencode({
+    properties = {
+      policySettings = {
+        enabledState = "Enabled"
+        mode         = "Prevention"
+      }
+    }
+    sku = {
+      name = "Premium_AzureFrontDoor"
+    }
+  })
+  tags = {}
+}

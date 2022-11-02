@@ -2,6 +2,7 @@ package common
 
 import (
 	"fmt"
+	"github.com/hashicorp/terraform-provider-azurerm/internal/temp/localserver"
 	"os"
 	"strings"
 
@@ -58,8 +59,8 @@ func (o ClientOptions) ConfigureClient(c *autorest.Client, authorizer autorest.A
 		}
 		c.RequestInspector = withCorrelationRequestID(id)
 	}
-	//c.SendDecorators = append(localserver.WithLocalServer(), azapi.WithAzapiGenerator()...)
-	c.SendDecorators = azapi.WithAzapiGenerator()
+	c.SendDecorators = append(localserver.WithLocalServer(), azapi.WithAzapiGenerator()...)
+	//c.SendDecorators = azapi.WithAzapiGenerator()
 }
 
 func setUserAgent(client *autorest.Client, tfVersion, partnerID string, disableTerraformPartnerID bool) {

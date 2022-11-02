@@ -13,7 +13,7 @@ provider "azapi" {
 resource "azapi_resource" "resourceGroup" {
   type      = "Microsoft.Resources/resourceGroups@2020-06-01"
   parent_id = "/subscriptions/85b3dbca-5974-4067-9669-67a141095a76"
-  name      = "acctestRG-auto-221018160938727128"
+  name      = "acctestRG-auto-221102104228526251"
   location  = "westeurope"
   body      = jsonencode({})
   tags      = {}
@@ -22,7 +22,7 @@ resource "azapi_resource" "resourceGroup" {
 resource "azapi_resource" "automationAccount" {
   type      = "Microsoft.Automation/automationAccounts@2021-06-22"
   parent_id = azapi_resource.resourceGroup.id
-  name      = "acctestAA-221018160938727128"
+  name      = "acctestAA-221102104228526251"
   location  = azapi_resource.resourceGroup.location
   body = jsonencode({
     properties = {
@@ -38,7 +38,7 @@ resource "azapi_resource" "automationAccount" {
 resource "azapi_resource" "connection" {
   type      = "Microsoft.Automation/automationAccounts/connections@2020-01-13-preview"
   parent_id = azapi_resource.automationAccount.id
-  name      = "acctestACCC-221018160938727128"
+  name      = "acctestACCC-221102104228526251"
 
   body = jsonencode({
     properties = {

@@ -1,0 +1,40 @@
+
+resource "azapi_resource" "storageAccount" {
+  type      = "Microsoft.Storage/storageAccounts@2021-09-01"
+  parent_id = azapi_resource.resourceGroup.id
+  name      = "acctestsah98ll"
+  location  = azapi_resource.resourceGroup.location
+  body = jsonencode({
+    kind = "StorageV2"
+    properties = {
+      accessTier                   = "Hot"
+      allowBlobPublicAccess        = true
+      allowCrossTenantReplication  = true
+      allowSharedKeyAccess         = true
+      defaultToOAuthAuthentication = false
+      encryption = {
+        keySource = "Microsoft.Storage"
+        services = {
+          queue = {
+            keyType = "Service"
+          }
+          table = {
+            keyType = "Service"
+          }
+        }
+      }
+      isHnsEnabled      = false
+      isNfsV3Enabled    = false
+      minimumTlsVersion = "TLS1_2"
+      networkAcls = {
+        defaultAction = "Allow"
+      }
+      publicNetworkAccess      = "Enabled"
+      supportsHttpsTrafficOnly = true
+    }
+    sku = {
+      name = "Standard_LRS"
+    }
+  })
+  tags = {}
+}
